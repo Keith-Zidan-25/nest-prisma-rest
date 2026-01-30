@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Get,
@@ -11,10 +12,14 @@ import {
 import { TasksService } from './tasks.service.js';
 import { Prisma } from '../generated/client.js';
 import type { Status } from '../generated/client.js';
+import { LoggerService } from '../logger/logger.service.js';
 
 @Controller('tasks')
 export class TasksController {
-  constructor(private readonly tasksService: TasksService) {}
+  constructor(
+    private readonly tasksService: TasksService,
+    private logger: LoggerService,
+  ) {}
 
   @Post()
   create(@Body() createTaskDto: Prisma.TaskCreateInput) {

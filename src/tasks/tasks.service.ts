@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service.js';
-import type { Status } from '../generated/client.js';
+import type { Status, Task } from '../generated/client.js';
 import { Prisma } from '../generated/client.js';
+import { PrismaPromise } from '@prisma/client/runtime/client';
 
 @Injectable()
 export class TasksService {
@@ -15,23 +16,37 @@ export class TasksService {
   }
 
   async findAll(status: Status | undefined) {
+    let tasks: PrismaPromise<Task[]>;
+
     if (status) {
-      return this.databaseService.task.findMany({
+      tasks = this.databaseService.task.findMany({
         where: {
           status,
         },
       });
+    } else {
+      tasks = this.databaseService.task.findMany();
     }
 
-    return this.databaseService.task.findMany();
+    if (!(await tasks).values) {
+      throw new NotFoundException();
+    }
+
+    return tasks;
   }
 
   async findOne(id: number) {
-    return this.databaseService.task.findUnique({
+    const task = this.databaseService.task.findUnique({
       where: {
         id,
       },
     });
+
+    if (!(await task)) {
+      throw new NotFoundException();
+    }
+
+    return task;
   }
 
   async findUserTasks(userId: number) {
