@@ -25,10 +25,16 @@ export class AuthService {
       throw new NotFoundException();
     }
 
-    if (user.password !== password) {
+    if (user.password === password) {
+      const payload = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      };
+      return this.jwtService.sign(payload);
+    } else {
+      console.log('User credentials dont match');
       throw new UnauthorizedException();
     }
-
-    return this.jwtService.sign(user);
   }
 }

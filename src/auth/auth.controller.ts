@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtGuard } from '../guards/jwt/jwt.guard.js';
 import express from 'express';
+import { LocalGuard } from '../guards/local/local.guard.js';
 
 @Controller('auth')
 export class AuthController {
   @Post('login')
-  @UseGuards(JwtGuard)
+  @UseGuards(LocalGuard)
   login(@Req() req: express.Request) {
     return req.user;
   }
